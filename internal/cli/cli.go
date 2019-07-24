@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -49,7 +50,7 @@ var RootCmd = &cobra.Command{
 		}
 		l := registry.GetLogger()
 		cp, _ := cmd.Flags().GetString("commit-payload")
-		f, _ := cmd.Flags().GetString("folder")
+		folder, _ := cmd.Flags().GetString("folder")
 		p, _ := cmd.Flags().GetString("file-extension")
 		owner, _ := cmd.Flags().GetString("owner")
 		repo, _ := cmd.Flags().GetString("repository")
@@ -61,12 +62,22 @@ var RootCmd = &cobra.Command{
 		for _, c := range commits {
 			for _, m := range c.Modified {
 				if !strings.HasSuffix(m, p) {
+					l.Debugf("skipped file %s from downloading", m)
 					continue
 				}
 				fcont, _, _, err := client.Repositories.GetContents(
 					context.Background(), owner, repo,
 					m, &github.RepositoryContentGetOptions{Ref: *c.ID},
 				)
+				str, err := fcont.GetContent()
+				if err != nil {
+					return fmt.Errorf("error in decoding github file content %s", err)
+				}
+				fname := filepath.Join(folder, filepath.Base(m))
+				if err := ioutil.WriteFile(fname, []byte(str), 0644); err != nil {
+					return fmt.Errorf("error in writing file %s %s", fname, err)
+				}
+				l.Infof("written file %s", fname)
 			}
 		}
 		return nil
