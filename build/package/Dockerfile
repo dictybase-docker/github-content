@@ -7,7 +7,7 @@ ADD cmd cmd
 ADD internal internal
 COPY go.mod go.sum ./
 RUN go get ./... && \
-    go build -o app cmd/github-github-content/main.go
+    go build -o app cmd/github-content/main.go
 
 FROM alpine:3.9
 RUN apk --no-cache add ca-certificates
