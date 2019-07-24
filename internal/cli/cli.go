@@ -99,19 +99,19 @@ func init() {
 		"commit-payload",
 		"c",
 		"",
-		"commit data that is received from GitHub after triggered by a push event",
+		"commit data that is received from GitHub after triggered by a push event[required]",
 	)
 	RootCmd.Flags().StringP(
 		"owner",
 		"o",
 		"",
-		"github repository owner",
+		"github repository owner[required]",
 	)
 	RootCmd.Flags().StringP(
 		"repository",
 		"r",
 		"",
-		"github repository name",
+		"github repository name[required]",
 	)
 	RootCmd.Flags().StringP(
 		"folder",
@@ -120,7 +120,6 @@ func init() {
 		"output folder[required]",
 	)
 	RootCmd.MarkFlagRequired("folder")
-	RootCmd.MarkFlagRequired("content-endpoint")
 	RootCmd.MarkFlagRequired("commit-payload")
 	RootCmd.MarkFlagRequired("repository")
 	RootCmd.MarkFlagRequired("owner")
